@@ -1,0 +1,8 @@
+{
+  "name": "CriptoOracle AI",
+  "description": "Chat móvil de criptomonedas con análisis de voz e imágenes.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
