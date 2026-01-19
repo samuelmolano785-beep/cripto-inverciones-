@@ -1,9 +1,9 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey:AIzaSyCZzOrruDL2uLNa3xnzJKPH5RLTEDo7_-U });
+const ai = new GoogleGenAI({ apiKey:"AIzaSyCZzOrruDL2uLNa3xnzJKPH5RLTEDo7_-U" });
 
 // Using standard Flash model which is widely available and multimodal (Audio/Image/Text)
-const CHAT_MODEL = "gemini-flash-latest";
+const CHAT_MODEL = "gemini-3-flash-preview";
 // Using TTS model for speaking
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
 
