@@ -8,12 +8,17 @@ const Navbar: React.FC = () => {
           <div className="w-8 h-8 bg-gradient-to-tr from-crypto-accent to-orange-500 rounded-full flex items-center justify-center">
             <span className="text-crypto-dark font-bold text-lg">₿</span>
           </div>
-          <h1 className="text-xl font-bold tracking-wider text-crypto-text">
-            CRIPTO<span className="text-crypto-accent">ORACLE</span> AI
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-bold tracking-wider text-crypto-text leading-none">
+                CRIPTO<span className="text-crypto-accent">ORACLE</span>
+            </h1>
+            <span className="text-[10px] text-crypto-accent font-bold tracking-widest uppercase bg-yellow-900/30 px-1 rounded w-fit mt-1">
+                Binance Edition
+            </span>
+          </div>
         </div>
         <div className="text-sm text-crypto-muted hidden md:block">
-          Powered by Gemini 3 Pro
+          Powered by Gemini 3
         </div>
       </div>
     </nav>

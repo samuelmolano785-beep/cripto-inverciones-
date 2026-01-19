@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import Disclaimer from './components/Disclaimer';
 import { sendMultiModalMessage } from './services/geminiService';
 import { ChatMessage } from './types';
 
@@ -27,7 +28,7 @@ const App: React.FC = () => {
     {
       id: 'welcome',
       role: 'model',
-      text: '👋 ¡Hola! Soy tu CriptoAmigo. \n\nMi misión es simple: **Que metas 10 y saques 20**. 🚀💰 \n\nDime "¿Qué compro?" y te digo la hora exacta de entrar y salir para ganar el doble.',
+      text: '🤑 **SISTEMA DE SEÑALES BINANCE ACTIVADO** 🤑\n\n¿Quieres multiplicar tu dinero x2 en 10 horas?\n\nPulsa el botón "🚀 DAME LA SEÑAL" 👇 o envíame una foto de un gráfico.',
       timestamp: new Date()
     }
   ]);
@@ -123,158 +124,145 @@ const App: React.FC = () => {
     setSelectedImage(null);
     setLoading(true);
 
-    // Call API
-    const response = await sendMultiModalMessage(
+    const result = await sendMultiModalMessage(
       textToSend || null,
-      selectedImage, // Pass the clean base64
+      selectedImage,
       audioBase64 || null
     );
 
-    const newModelMsg: ChatMessage = {
+    setLoading(false);
+
+    const newAiMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),
       role: 'model',
-      text: response.text,
-      audio: response.audio,
+      text: result.text,
+      audio: result.audio,
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, newModelMsg]);
-    setLoading(false);
+    setMessages(prev => [...prev, newAiMsg]);
 
-    // Auto-play audio if present
-    if (response.audio && audioContextRef.current) {
-        if (audioContextRef.current.state === 'suspended') {
-            await audioContextRef.current.resume();
-        }
-        playAudioFromBase64(response.audio, audioContextRef.current);
+    if (result.audio && audioContextRef.current) {
+      await playAudioFromBase64(result.audio, audioContextRef.current);
     }
   };
 
-  const triggerStrategy = () => {
-      handleSendMessage("Dime qué comprar para meter 10 y sacar 20. Dime la hora exacta de entrar y salir.");
-  };
-
   return (
-    <div className="flex flex-col h-screen bg-crypto-dark text-gray-100 font-sans overflow-hidden">
+    <div className="flex flex-col h-screen bg-crypto-dark text-crypto-text font-sans">
       <Navbar />
-
+      
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-36">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
+          <div 
+            key={msg.id} 
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div
-              className={`max-w-[85%] rounded-2xl p-4 ${
-                msg.role === 'user'
-                  ? 'bg-crypto-card border border-gray-700 text-right'
-                  : 'bg-gradient-to-br from-gray-800 to-gray-900 border border-crypto-accent/30 shadow-[0_0_10px_rgba(252,213,53,0.1)]'
+            <div 
+              className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-lg ${
+                msg.role === 'user' 
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-tr-none' 
+                  : 'bg-crypto-card border border-gray-800 text-gray-100 rounded-tl-none'
               }`}
             >
               {msg.image && (
-                <img src={msg.image} alt="Upload" className="rounded-lg mb-2 max-h-48 object-cover border border-gray-600" />
+                <img src={msg.image} alt="User upload" className="rounded-lg mb-3 max-h-64 border border-gray-600" />
               )}
               
-              <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
-                  {msg.text}
+              <div className="whitespace-pre-line leading-relaxed text-sm md:text-base">
+                {msg.text}
               </div>
 
-              {msg.audio && (
-                  <button 
-                    onClick={() => audioContextRef.current && msg.audio && playAudioFromBase64(msg.audio, audioContextRef.current)}
-                    className="mt-2 text-crypto-accent text-xs flex items-center gap-1 font-bold"
-                  >
-                      🔊 Escuchar consejo
-                  </button>
+              {msg.role === 'model' && (
+                <div className="mt-2 text-[10px] text-gray-500 flex items-center justify-between">
+                   <span>Binance Oracle AI</span>
+                   <span>{msg.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
               )}
-              
-              <span className="text-[10px] text-gray-500 block mt-1 opacity-70">
-                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
             </div>
           </div>
         ))}
         
         {loading && (
           <div className="flex justify-start">
-             <div className="bg-gray-800 rounded-2xl p-4 flex gap-2 items-center">
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce delay-75"></div>
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce delay-150"></div>
-                <span className="text-xs text-gray-400 ml-2">Revisando el mercado...</span>
+             <div className="bg-crypto-card border border-gray-800 rounded-2xl rounded-tl-none p-4 flex items-center space-x-2">
+                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
              </div>
           </div>
         )}
         <div ref={messagesEndRef} />
-      </div>
-
-      {/* Floating Action Button for Strategy */}
-      <div className="absolute bottom-24 right-4 z-10">
-         <button 
-           onClick={triggerStrategy}
-           className="bg-crypto-green text-white font-bold py-3 px-6 rounded-full shadow-lg border-2 border-green-400 animate-pulse text-sm flex items-center gap-2"
-         >
-           🚀 Buscar x2 (Mete 10 saca 20)
-         </button>
+        
+        <Disclaimer />
       </div>
 
       {/* Input Area */}
-      <div className="bg-crypto-card border-t border-gray-800 p-3 pb-6 fixed bottom-0 w-full z-20">
-        {selectedImage && (
-            <div className="flex items-center gap-2 mb-2 px-2">
-                <span className="text-xs text-crypto-accent bg-gray-800 px-2 py-1 rounded">Foto lista para analizar</span>
-                <button onClick={() => setSelectedImage(null)} className="text-red-400 text-xs">✕</button>
+      <div className="fixed bottom-0 w-full bg-crypto-card border-t border-gray-800 p-4 pb-6 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+        <div className="container mx-auto max-w-4xl flex flex-col gap-3">
+            
+            {/* Quick Actions */}
+            {messages.length < 3 && (
+                <button 
+                    onClick={() => handleSendMessage("¿Qué compro YA en Binance para ganar el doble en 10 horas?", undefined)}
+                    className="mx-auto bg-crypto-accent hover:bg-yellow-400 text-crypto-dark font-bold text-sm py-2 px-6 rounded-full transition-colors mb-2 animate-pulse"
+                >
+                    🚀 DAME LA SEÑAL x2 AHORA
+                </button>
+            )}
+
+            {selectedImage && (
+                <div className="flex items-center gap-2 bg-gray-800/50 p-2 rounded-lg w-fit">
+                    <span className="text-xs text-green-400">Imagen adjunta</span>
+                    <button onClick={() => setSelectedImage(null)} className="text-gray-400 hover:text-white">✕</button>
+                </div>
+            )}
+
+            <div className="flex items-center gap-2">
+                <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-3 rounded-full bg-gray-800 text-crypto-accent hover:bg-gray-700 transition-colors"
+                    title="Subir gráfico"
+                >
+                    📷
+                </button>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleImageSelect}
+                />
+
+                <input
+                    type="text"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    placeholder="Pregunta sobre Binance..."
+                    className="flex-1 bg-gray-900 text-white rounded-full px-5 py-3 border border-gray-700 focus:border-crypto-accent focus:outline-none placeholder-gray-500"
+                    disabled={loading || isRecording}
+                />
+
+                <button 
+                    onClick={isRecording ? stopRecording : startRecording}
+                    className={`p-3 rounded-full transition-all duration-300 ${
+                        isRecording 
+                        ? 'bg-red-600 text-white animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.7)]' 
+                        : 'bg-gray-800 text-crypto-accent hover:bg-gray-700'
+                    }`}
+                >
+                    {isRecording ? '⏹' : '🎤'}
+                </button>
+
+                <button 
+                    onClick={() => handleSendMessage()}
+                    disabled={loading || (!inputText && !selectedImage)}
+                    className="p-3 rounded-full bg-crypto-accent text-crypto-dark font-bold hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    ➤
+                </button>
             </div>
-        )}
-        
-        <div className="flex items-center gap-2">
-          {/* Image Upload */}
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="p-3 bg-gray-800 rounded-full text-crypto-muted hover:text-white transition-colors"
-          >
-            📷
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleImageSelect} 
-            accept="image/*" 
-            className="hidden" 
-          />
-
-          {/* Text Input */}
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(null)}
-            placeholder="Escribe aquí..."
-            className="flex-1 bg-gray-900 border border-gray-700 text-white rounded-full px-4 py-3 focus:outline-none focus:border-crypto-accent text-sm"
-          />
-
-          {/* Mic Button */}
-          <button
-            onClick={isRecording ? stopRecording : startRecording}
-            className={`p-3 rounded-full transition-all ${
-              isRecording 
-                ? 'bg-red-500 text-white animate-pulse scale-110' 
-                : 'bg-gray-800 text-crypto-muted hover:text-white'
-            }`}
-          >
-            {isRecording ? '⏹️' : '🎙️'}
-          </button>
-
-          {/* Send Button */}
-          {!isRecording && (inputText || selectedImage) && (
-            <button
-              onClick={() => handleSendMessage(null)}
-              className="p-3 bg-crypto-accent text-crypto-dark rounded-full font-bold hover:bg-yellow-400"
-            >
-              ➤
-            </button>
-          )}
         </div>
       </div>
     </div>
