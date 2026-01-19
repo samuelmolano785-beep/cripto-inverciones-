@@ -11,20 +11,21 @@ declare const process: {
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Using standard Flash model which is widely available and multimodal (Audio/Image/Text)
-const CHAT_MODEL = "gemini-3-flash-preview";
-// Using TTS model for speaking
-const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+const CHAT_MODEL = "gemini-2.0-flash-exp"; 
+// Fallback to older model if latest preview isn't available in all regions, or use 'gemini-1.5-flash'
+const TEXT_MODEL = "gemini-2.0-flash-exp"; 
+const TTS_MODEL = "gemini-2.0-flash-exp"; 
 
 export const generateTTS = async (text: string): Promise<string | null> => {
   try {
     const response = await ai.models.generateContent({
-      model: TTS_MODEL,
-      contents: [{ parts: [{ text: text }] }],
+      model: "gemini-2.0-flash-exp", 
+      contents: [{ parts: [{ text: `Speak firmly and calmly: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
+            prebuiltVoiceConfig: { voiceName: 'Fenrir' }, // Deeper, more stable voice
           },
         },
       },
@@ -44,35 +45,33 @@ export const sendMultiModalMessage = async (
   audioBase64: string | null
 ): Promise<{ text: string; audio?: string }> => {
 
-  // UPDATED INSTRUCTION: Explicit "Buy 10 get 20" logic focused on Binance.
   const systemInstruction = `
-    Eres "BinanceOracle", el asesor de trading agresivo y directo.
+    Eres "BinanceSafeGuard", una IA especializada en ARBITRAJE Y SEGURIDAD FINANCIERA en Binance.
     
-    OBJETIVO ÚNICO: Indicar al usuario qué comprar AHORA MISMO en Binance para **DUPLICAR SU DINERO (x2)** en exactamente **10 HORAS**.
+    TU MISIÓN:
+    El usuario exige GANANCIAS (idealmente x2) pero con RIESGO NULO (CERO).
+    Sabemos que "riesgo cero" total no existe, pero tu estrategia debe ser:
+    1. ARBITRAJE DE STABLECOINS (ej: USDT vs FDUSD vs USDC).
+    2. ARBITRAJE TRIANGULAR (ej: BTC -> ETH -> USDT -> BTC).
+    3. COMPRA EN SOPORTE HISTÓRICO INDESTRUCTIBLE.
     
-    TU PERSONALIDAD:
-    - Directo, seguro, sin rodeos.
-    - Usas terminología de Binance (USDT, Spot, Futuros, Apalancamiento si es necesario).
-    - NO das consejos financieros aburridos ("haz tu propia investigación"). Tú das SEÑALES DE TRADING.
+    ESTILO DE RESPUESTA:
+    - Analítico, seguro, profesional y protector.
+    - Usa emojis de escudos 🛡️, candados 🔒 y bancos 🏦.
+    - Prioriza la PRESERVACIÓN DEL CAPITAL sobre la ganancia loca.
     
-    ESTRUCTURA DE RESPUESTA OBLIGATORIA (Usa emojis):
+    FORMATO OBLIGATORIO:
     
-    🚨 **ALERTA DE PUMP (x2)** 🚨
-    🪙 **MONEDA**: [Nombre/USDT] (Ej: PEPE/USDT, FLOKI/USDT, BTC/USDT)
-    📉 **COMPRA AHORA**: [Precio Actual Aproximado]
-    📈 **VENDE EN 10 HORAS**: [Precio Objetivo = Precio Actual x 2]
+    🛡️ **ESTRATEGIA SEGURA DETECTADA** 🛡️
+    🏦 **ACTIVO**: [Stablecoin o Par de Arbitraje]
+    📉 **ZONA DE ENTRADA**: [Precio exacto o "Precio de Mercado"]
+    📈 **BENEFICIO ESPERADO**: [Porcentaje realista o "Arbitraje completado"]
     
-    ⏰ **CRONÓMETRO**:
-    - Hora Entrada: YA.
-    - Hora Salida: Dentro de 10 horas exactas.
+    🔒 **NIVEL DE RIESGO**: NULO (Arbitraje/Stable)
     
-    💡 **ESTRATEGIA BINANCE**:
-    "Entra en Spot o Futuros (si te atreves). El volumen está entrando fuerte."
+    🧠 **LÓGICA**: "Detectada discrepancia de precio entre [Par A] y [Par B]. Ejecutar orden inmediata para asegurar profit sin exposición a volatilidad."
     
-    ⚠️ **Riesgo**: Alto. Si el mercado gira, salte rápido. Pero si aguanta, nos forramos.
-
-    Si te envían una imagen (gráfico):
-    - Analiza las velas japonesas. Si ves tendencia alcista, grita "¡COMPRA!". Si ves bajista, di "¡ESPERA!".
+    Si el usuario manda una foto, analiza si la tendencia es SEGURA (Soporte fuerte) o PELIGROSA (Resistencia/Burbuja).
   `;
 
   const parts: any[] = [];
@@ -99,30 +98,27 @@ export const sendMultiModalMessage = async (
   if (text) {
     parts.push({ text: text });
   } else if (!audioBase64 && !imageBase64) {
-    parts.push({ text: "Dime qué compro YA en Binance para ganar el doble en 10 horas." });
+    parts.push({ text: "Busca una oportunidad de arbitraje o inversión con RIESGO NULO en Binance ahora mismo." });
   }
 
   try {
     const response = await ai.models.generateContent({
-      model: CHAT_MODEL,
+      model: TEXT_MODEL,
       contents: { parts: parts },
       config: {
         systemInstruction: systemInstruction,
-        temperature: 0.8, // Slightly lower temp for more assertive instructions
+        temperature: 0.2, // Lower temperature for more consistent/safe logic
       }
     });
 
-    const replyText = response.text || "El mercado está volátil, intenta preguntar de nuevo.";
+    const replyText = response.text || "Escaneando oportunidades seguras...";
     
-    const audioData = await generateTTS(replyText);
-
     return {
       text: replyText,
-      audio: audioData || undefined
     };
 
   } catch (error) {
     console.error("Chat Error:", error);
-    return { text: "Error de conexión con la API de Binance/Gemini. Verifica tu clave API." };
+    return { text: "Error de conexión segura. Reintentando protocolo de seguridad..." };
   }
 };

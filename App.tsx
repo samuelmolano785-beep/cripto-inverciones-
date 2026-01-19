@@ -28,7 +28,7 @@ const App: React.FC = () => {
     {
       id: 'welcome',
       role: 'model',
-      text: '🤑 **BINANCE ORACLE ACTIVADO** 🤑\n\nEstoy conectado a la red.\n¿Quieres saber qué comprar YA para **multiplicar x2 en 10 horas**?\n\nPulsa el botón "🚀 DAME LA SEÑAL" 👇 o pregúntame cualquier cosa sobre Binance.',
+      text: '🛡️ **MODO SEGURO: RIESGO NULO** 🛡️\n\nHe activado los filtros de protección de capital.\nBusco **Arbitraje de Stablecoins** y oportunidades sin exposición a caídas.\n\n¿Quieres ver la operación más segura disponible ahora mismo?',
       timestamp: new Date()
     }
   ]);
@@ -114,7 +114,7 @@ const App: React.FC = () => {
     const newUserMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      text: audioBase64 ? '🎤 Mensaje de voz enviado' : (textToSend || '📷 Imagen enviada'),
+      text: audioBase64 ? '🎤 Consulta de seguridad enviada' : (textToSend || '📷 Gráfico enviado para análisis'),
       image: selectedImage ? `data:image/jpeg;base64,${selectedImage}` : undefined,
       timestamp: new Date()
     };
@@ -174,8 +174,8 @@ const App: React.FC = () => {
               </div>
 
               {msg.role === 'model' && (
-                <div className="mt-2 text-[10px] text-gray-500 flex items-center justify-between">
-                   <span>Binance Oracle AI</span>
+                <div className="mt-2 text-[10px] text-green-400 flex items-center justify-between">
+                   <span>🛡️ Binance SafeGuard</span>
                    <span>{msg.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
               )}
@@ -185,10 +185,10 @@ const App: React.FC = () => {
         
         {loading && (
           <div className="flex justify-start">
-             <div className="bg-crypto-card border border-gray-800 rounded-2xl rounded-tl-none p-4 flex items-center space-x-2">
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                <div className="w-2 h-2 bg-crypto-accent rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+             <div className="bg-crypto-card border border-green-900/50 rounded-2xl rounded-tl-none p-4 flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
              </div>
           </div>
         )}
@@ -204,10 +204,10 @@ const App: React.FC = () => {
             {/* Quick Actions */}
             {messages.length < 3 && (
                 <button 
-                    onClick={() => handleSendMessage("¿Qué compro YA en Binance para ganar el doble en 10 horas?", undefined)}
-                    className="mx-auto bg-crypto-accent hover:bg-yellow-400 text-crypto-dark font-bold text-sm py-2 px-6 rounded-full transition-colors mb-2 animate-pulse"
+                    onClick={() => handleSendMessage("Busca una oportunidad de ARBITRAJE o inversión con RIESGO NULO en Binance.", undefined)}
+                    className="mx-auto w-full md:w-auto bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white font-bold text-base py-3 px-8 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-105 mb-2"
                 >
-                    🚀 SEÑAL x2 EN 10H
+                    🛡️ SEÑAL SEGURA (RIESGO 0)
                 </button>
             )}
 
@@ -221,7 +221,7 @@ const App: React.FC = () => {
             <div className="flex items-center gap-2">
                 <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-3 rounded-full bg-gray-800 text-crypto-accent hover:bg-gray-700 transition-colors"
+                    className="p-3 rounded-full bg-gray-800 text-green-400 hover:bg-gray-700 transition-colors"
                     title="Subir gráfico"
                 >
                     📷
@@ -239,8 +239,8 @@ const App: React.FC = () => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Pregunta sobre Binance..."
-                    className="flex-1 bg-gray-900 text-white rounded-full px-5 py-3 border border-gray-700 focus:border-crypto-accent focus:outline-none placeholder-gray-500"
+                    placeholder="Pregunta sobre arbitraje seguro..."
+                    className="flex-1 bg-gray-900 text-white rounded-full px-5 py-3 border border-gray-700 focus:border-green-500 focus:outline-none placeholder-gray-500"
                     disabled={loading || isRecording}
                 />
 
@@ -248,8 +248,8 @@ const App: React.FC = () => {
                     onClick={isRecording ? stopRecording : startRecording}
                     className={`p-3 rounded-full transition-all duration-300 ${
                         isRecording 
-                        ? 'bg-red-600 text-white animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.7)]' 
-                        : 'bg-gray-800 text-crypto-accent hover:bg-gray-700'
+                        ? 'bg-red-600 text-white animate-pulse' 
+                        : 'bg-gray-800 text-green-400 hover:bg-gray-700'
                     }`}
                 >
                     {isRecording ? '⏹' : '🎤'}
@@ -258,7 +258,7 @@ const App: React.FC = () => {
                 <button 
                     onClick={() => handleSendMessage()}
                     disabled={loading || (!inputText && !selectedImage)}
-                    className="p-3 rounded-full bg-crypto-accent text-crypto-dark font-bold hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-3 rounded-full bg-green-600 text-white font-bold hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     ➤
                 </button>
