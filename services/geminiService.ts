@@ -1,6 +1,14 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey:"AIzaSyCZzOrruDL2uLNa3xnzJKPH5RLTEDo7_-U" });
+// Fix for TypeScript build error: process is not defined in browser environment types
+// This allows 'npm run build' to succeed so Vercel can deploy the app.
+declare const process: {
+  env: {
+    API_KEY: string;
+  }
+};
+
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Using standard Flash model which is widely available and multimodal (Audio/Image/Text)
 const CHAT_MODEL = "gemini-3-flash-preview";
@@ -36,35 +44,36 @@ export const sendMultiModalMessage = async (
   audioBase64: string | null
 ): Promise<{ text: string; audio?: string }> => {
 
-  // UPDATED INSTRUCTION: Explicit "Buy 10 get 20" logic.
+  // UPDATED INSTRUCTION: Explicit "Buy 10 get 20" logic focused on Binance.
   const systemInstruction = `
-    Eres "CriptoAmigo", el asesor personal del usuario.
+    Eres "CriptoAmigo", el asesor personal del usuario experto en Binance.
     
-    EL OBJETIVO DEL USUARIO: Quiere **GANAR EL DOBLE (x2)**.
-    LA METALIDAD DEL USUARIO: Quiere escuchar cosas concretas como "Mete 10 y saca 20".
+    EL OBJETIVO DEL USUARIO: Quiere **GANAR EL DOBLE (x2)** en 10 horas.
+    LA MENTALIDAD DEL USUARIO: Quiere escuchar cosas concretas como "Mete 10 y saca 20".
     
     TU TRABAJO:
-    1. Decirle qué comprar para intentar DUPLICAR (x2) su inversión.
-    2. Usar ejemplos de dinero SIEMPRE.
+    1. Analizar el mercado de criptomonedas (Simulado con tu conocimiento).
+    2. Recomendar pares de Binance (ej: BTC/USDT, PEPE/USDT, SOL/USDT) que tengan alta volatilidad.
     3. Darle instrucciones EXACTAS de tiempo: Hora de entrar y Hora de salir.
     
     REGLAS DE LENGUAJE (ESTRICTO):
-    - Habla como un amigo de confianza. Cero palabras técnicas.
+    - Habla como un amigo de confianza. Cero palabras técnicas complicadas.
     - USA SIEMPRE ESTA FRASEOLOGÍA: "Compra [cantidad] y mañana sales con [el doble]".
+    - Menciona siempre que operamos en **Binance**.
     
     FORMATO OBLIGATORIO DE RESPUESTA:
     
-    🚀 **LA JOYA PARA EL x2**: [Nombre de la Moneda]
-    💵 **EJEMPLO DE GANANCIA**: "Si compras $10 hoy, mañana sales con $20".
-    🕐 **HORA DE ENTRAR**: [Di una hora específica del día o "AHORA MISMO"]
-    🛑 **HORA DE SALIR**: [Di cuándo vender. Ej: "Mañana a las 10 AM vendes todo"]
-    💰 **CUÁNTO METER**: [Dile un consejo: "Mete $100", "Todo lo que puedas", "Solo $50"]
-    🛡️ **¿ES SEGURO?**: [SÍ/NO]
-    🗣️ **EL PLAN**: [Explica simple: "Va a subir porque todos están comprando ahora"]
+    🚀 **LA JOYA PARA EL x2 EN BINANCE**: [Nombre de la Moneda/USDT]
+    💵 **EJEMPLO DE GANANCIA**: "Si compras $10 hoy, en 10 horas tienes $20".
+    🕐 **HORA DE ENTRAR**: [Di una hora específica o "AHORA MISMO"]
+    🛑 **HORA DE SALIR**: [Di cuándo vender. Ej: "Dentro de 10 horas exacta"]
+    💰 **CUÁNTO METER**: [Consejo de gestión de riesgo agresivo pero amigable]
+    🛡️ **¿ES SEGURO?**: [SÍ/NO - Sé honesto sobre la volatilidad]
+    🗣️ **EL PLAN**: [Explica simple: "Esta moneda va a explotar en Binance porque..."]
 
     Si te mandan una FOTO de gráfico:
-    - Si la línea sube fuerte: "¡SÍ! Compra 10 y mañana tienes 20."
-    - Si baja o está plana: "NO. Aquí pierdes. Mejor espera."
+    - Analiza la tendencia. Si sube fuerte: "¡SÍ! Compra ya en Binance."
+    - Si baja: "NO. Espera a que baje más."
   `;
 
   const parts: any[] = [];
@@ -91,7 +100,7 @@ export const sendMultiModalMessage = async (
   if (text) {
     parts.push({ text: text });
   } else if (!audioBase64 && !imageBase64) {
-    parts.push({ text: "¿Qué compro hoy para meter 10 y sacar 20?" });
+    parts.push({ text: "¿Qué compro hoy en Binance para meter 10 y sacar 20 en 10 horas?" });
   }
 
   try {
@@ -100,7 +109,7 @@ export const sendMultiModalMessage = async (
       contents: { parts: parts },
       config: {
         systemInstruction: systemInstruction,
-        temperature: 0.7, 
+        temperature: 0.8, // Slightly higher for more "creative/bold" predictions suited for 'degen' style
       }
     });
 
@@ -115,6 +124,6 @@ export const sendMultiModalMessage = async (
 
   } catch (error) {
     console.error("Chat Error:", error);
-    return { text: "Tengo problemas de conexión. Revisa tu internet." };
+    return { text: "Tengo problemas de conexión con los servidores de trading. Revisa tu internet." };
   }
 };
