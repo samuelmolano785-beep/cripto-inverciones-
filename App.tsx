@@ -28,7 +28,7 @@ const App: React.FC = () => {
     {
       id: 'welcome',
       role: 'model',
-      text: '🤑 **SISTEMA DE SEÑALES BINANCE ACTIVADO** 🤑\n\n¿Quieres multiplicar tu dinero x2 en 10 horas?\n\nPulsa el botón "🚀 DAME LA SEÑAL" 👇 o envíame una foto de un gráfico.',
+      text: '🤑 **BINANCE ORACLE ACTIVADO** 🤑\n\nEstoy conectado a la red.\n¿Quieres saber qué comprar YA para **multiplicar x2 en 10 horas**?\n\nPulsa el botón "🚀 DAME LA SEÑAL" 👇 o pregúntame cualquier cosa sobre Binance.',
       timestamp: new Date()
     }
   ]);
@@ -207,7 +207,7 @@ const App: React.FC = () => {
                     onClick={() => handleSendMessage("¿Qué compro YA en Binance para ganar el doble en 10 horas?", undefined)}
                     className="mx-auto bg-crypto-accent hover:bg-yellow-400 text-crypto-dark font-bold text-sm py-2 px-6 rounded-full transition-colors mb-2 animate-pulse"
                 >
-                    🚀 DAME LA SEÑAL x2 AHORA
+                    🚀 SEÑAL x2 EN 10H
                 </button>
             )}
 
