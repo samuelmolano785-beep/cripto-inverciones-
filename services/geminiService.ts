@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey:AIzaSyCZzOrruDL2uLNa3xnzJKPH5RLTEDo7_-U });
 
 // Using standard Flash model which is widely available and multimodal (Audio/Image/Text)
 const CHAT_MODEL = "gemini-flash-latest";
