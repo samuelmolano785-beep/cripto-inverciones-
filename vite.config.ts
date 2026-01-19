@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env.API_KEY': JSON.stringify("AIzaSyCZzOrruDL2uLNa3xnzJKPH5RLTEDo7_-U")
+    // This allows the app to read the API_KEY from Vercel's Environment Variables
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY)
   }
 })
